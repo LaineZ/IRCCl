@@ -30,7 +30,9 @@ namespace IRCCl.Windows
 			var userName = new TextBox() { Text = "IRCCl", Size = new Size(240, -1) };
 
 			var checkAutoconnect = new CheckBox() { Text = "Auto-connect on next startup" };
-			var connectButton = new Button() { Text = "Connect!", Enabled = false };
+			var connectButton = new Button() { Text = "Connect!" };
+
+            connectButton.Click += ConnectButton_Click;
 
 			layout.Items.Add(new StackLayoutItem(welcomeLabel));
 			layout.Items.Add(new StackLayoutItem(descLabel));
@@ -44,5 +46,10 @@ namespace IRCCl.Windows
 			layout.Items.Add(new StackLayoutItem(connectButton));
 			Content = layout;
 		}
-	}
+
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+			// TODO:
+		}
+    }
 }
