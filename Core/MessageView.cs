@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using HtmlTags;
 using System.IO;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using TheArtOfDev.HtmlRenderer.Eto;
-
+using System.Text.RegularExpressions;
 namespace IRCCl.Core
 {
     public class MessageView
     {
         public HtmlDocument Html;
         public HtmlPanel MessagesWebView = new HtmlPanel();
+        private readonly Regex domainRegex = new Regex(@"(((?<scheme>http(s)?):\/\/)?([\w-]+?\.\w+)+([a-zA-Z0-9\~\!\@\#\$\%\^\&amp;\*\(_\-\=\+\\\/\?\.\:\;\,]*)?)", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         /// Creates new MessageView instance.
@@ -22,64 +18,32 @@ namespace IRCCl.Core
         {
             Html = new HtmlDocument();
             Html.AddStyle(File.ReadAllText("Assets/style.css"));
-
+            MessagesWebView.Text = Html.ToString();
         }
 
-        private void OpenUrl(string url)
+        public string Linkify(string text, string target = "_self")
         {
-            try
-            {
-                Process.Start(url);
-            }
-            catch
-            {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
+            return domainRegex.Replace(
+                text,
+                match => {
+                    var link = match.ToString();
+                    var scheme = match.Groups["scheme"].Value == "https" ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
 
-        private void MessagesWebView_DocumentLoading(object sender, WebViewLoadingEventArgs e)
-        {
-            if (e.Uri.ToString() != "about:blank")
-            {
-                e.Cancel = true;
-                OpenUrl(e.Uri.ToString());
-            }
+                    var url = new UriBuilder(link) { Scheme = scheme }.Uri.ToString();
+
+                    return string.Format(@"<a href=""{0}"" target=""{1}"">{2}</a>", url, target, link);
+                }
+            );
         }
 
         public void UpdateHtml()
         {
-            MessagesWebView.Text = Html.ToString();
+            MessagesWebView.Text += Html.Last.ToString();
         }
 
         public void AddSystemMessage(string message)
         {
-            Html.Add(new HtmlTag("p").Text($"[{DateTime.Now}] {message}"));
-            UpdateHtml();
+            Html.Add(new HtmlTag("p").AppendHtml($"{Linkify(message)}"));
         }
-
-        public void AddImage(string src)
-        {
-            Html.Add(new HtmlTag("a").Attr("href", src).Text(src));
-            Html.Add(new HtmlTag("img").Attr("src", src));
-            UpdateHtml();
-        }
-
     }
 }
