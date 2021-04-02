@@ -15,11 +15,12 @@ namespace IRCCl.Windows
 			});
 
 			Title = "IRCCl Client";
-			ClientSize = new Size(250, 250);
+			ClientSize = new Size(260, 500);
 			WindowStyle = WindowStyle.Utility;
 			Resizable = false;
 
 			var layout = new StackLayout() { Style = "padded-stack" };
+			var image = new ImageView() { Image = new Bitmap("Assets/logo.png"), Size = new Size(250, 250) };
 			var welcomeLabel = new Label() { Text = "Welcome! To IRCCl", Font = new Font("sans-serif", 16) };
 			var descLabel = new Label() { Text = "To continue, input IRC network data below:", Size = new Size(-1, 20) };
 			var serverLabel = new Label() { Text = "Server name:" };
@@ -34,6 +35,7 @@ namespace IRCCl.Windows
 
             connectButton.Click += ConnectButton_Click;
 
+			layout.Items.Add(new StackLayoutItem(image));
 			layout.Items.Add(new StackLayoutItem(welcomeLabel));
 			layout.Items.Add(new StackLayoutItem(descLabel));
 			layout.Items.Add(new StackLayoutItem(serverLabel));

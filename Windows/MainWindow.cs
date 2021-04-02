@@ -1,5 +1,6 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
+using IRCCl.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,35 +10,48 @@ namespace IRCCl.Windows
 {
 	class MainWindow : Form
     {
+		MessageView Messages = new MessageView();
+		TextBox InputMessage = new TextBox();
+
+
 		public MainWindow()
 		{
+			var connect = new ConnectionWindow();
+			connect.Show();
+
 			Eto.Style.Add<TableLayout>("padded-table", table => {
 				table.Padding = new Padding(5);
 			});
 
-			Title = "winit window";
+			Title = "IRCCl 1.0";
 			// TODO: load/save window geometry
 			ClientSize = new Size(800, 600);
-
-			var connect = new ConnectionWindow();
-
-			connect.Show();
-
 			var layout = new TableLayout() { Style = "padded-table"};
-			var messages = new Core.MessageView();
-			var messagesView = new WebView();
+			var messageLayout = new StackLayout();
+			var scrollLayout = new Scrollable() { MinimumSize = new Size(800, 600) };
+			messageLayout.Items.Add(new StackLayoutItem(Messages.MessagesWebView));
+			scrollLayout.Content = messageLayout;
+			InputMessage.KeyDown += InputMessage_KeyDown;
 
-            for (int i = 0; i < 100; i++)
-            {
-				messages.AddSystemMessage("hello world");
-			}
-
-			messagesView.LoadHtml(messages.Html.ToString());
-
-			messages.Html.WriteToFile("debug.html");
-
-			layout.Rows.Add(new TableRow(messagesView));
+			layout.Rows.Add(new TableRow(scrollLayout) { ScaleHeight = true });
+			layout.Rows.Add(new TableRow(InputMessage) { ScaleHeight = false });
 			Content = layout;
 		}
-	}
+
+        private void InputMessage_KeyDown(object sender, KeyEventArgs e)
+        {
+			if (e.IsKeyDown(Keys.Enter))
+			{
+				if (InputMessage.Text.StartsWith("https://"))
+				{
+					Messages.AddImage(InputMessage.Text);
+				}
+				else
+				{
+					Messages.AddSystemMessage(InputMessage.Text);
+				}
+				InputMessage.Text = "";
+			}
+        }
+    }
 }
