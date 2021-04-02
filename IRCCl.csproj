@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.5.10" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.10" />
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Gtk" Condition="$([MSBuild]::IsOsPlatform('Linux'))" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Windows" Condition="$([MSBuild]::IsOsPlatform('Windows'))" Version="2.5.10" />
     <PackageReference Include="HtmlTags" Version="8.1.1" />
   </ItemGroup>
 
