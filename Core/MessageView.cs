@@ -4,6 +4,7 @@ using System.IO;
 using TheArtOfDev.HtmlRenderer.Eto;
 using System.Text.RegularExpressions;
 using Eto.Forms;
+using System.Threading;
 
 namespace IRCCl.Core
 {
@@ -40,12 +41,22 @@ namespace IRCCl.Core
 
         public void UpdateHtml()
         {
-            Application.Instance.Invoke(() => MessagesWebView.Text = Html.ToString());
+            Thread thread = Thread.CurrentThread;
+            //Console.WriteLine(thread.ManagedThreadId);
+            if (thread.ManagedThreadId == 1)
+            {
+                MessagesWebView.Text = Html.ToString();
+            }
+            else
+            {
+                Application.Instance.Invoke(() => MessagesWebView.Text = Html.ToString());
+            }
         }
 
         public void AddSystemMessage(string message)
         {
             Html.Add(new HtmlTag("p").AppendHtml($"{Linkify(message)}"));
+            UpdateHtml();
         }
     }
 }

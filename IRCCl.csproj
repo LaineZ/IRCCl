@@ -12,6 +12,7 @@
     <PackageReference Include="Eto.Platform.Windows" Condition="$([MSBuild]::IsOsPlatform('Windows'))" Version="2.5.10" />
     <PackageReference Include="HtmlTags" Version="8.1.1" />
     <PackageReference Include="NetIRC" Version="1.0.0" />
+    <PackageReference Include="Qmmands" Version="4.0.0" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

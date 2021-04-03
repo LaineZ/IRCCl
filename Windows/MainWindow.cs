@@ -12,7 +12,6 @@ namespace IRCCl.Windows
     {
         TextBox InputMessage = new TextBox();
         Scrollable ScrollLayout = new Scrollable() { MinimumSize = new Size(800, 600) };
-        UITimer Timer = new UITimer();
 
         public MainWindow()
         {
@@ -30,10 +29,6 @@ namespace IRCCl.Windows
             var messageLayout = new PixelLayout();
             var timer = new UITimer();
 
-            Timer.Start();
-            Timer.Interval = 0.033; // 30 FPS
-            Timer.Elapsed += Timer_Elapsed;
-
             messageLayout.Add(IRC.Messages.MessagesWebView, 0, 0);
             ScrollLayout.Content = messageLayout;
 
@@ -47,9 +42,6 @@ namespace IRCCl.Windows
             Content = layout;
         }
 
-        private void Timer_Elapsed(object sender, EventArgs e)
-        {
-        }
 
         private void ScrollLayout_Scroll(object sender, ScrollEventArgs e)
         {
@@ -60,7 +52,14 @@ namespace IRCCl.Windows
         {
             if (e.IsKeyDown(Keys.Enter))
             {
-                await IRC.client.SendRaw(InputMessage.Text);
+                var cmdExec = new CommandExecutor();
+                var commandRes = await cmdExec.ExecuteCommand(InputMessage.Text);
+
+                if (commandRes == false)
+                {
+                    await IRC.SendRaw(InputMessage.Text.TrimStart('/'));
+                }
+
                 ScrollLayout.ScrollPosition = new Point(ScrollLayout.Size.Width, ScrollLayout.Size.Height);
                 InputMessage.Text = "";
             }
