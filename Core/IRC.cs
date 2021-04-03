@@ -32,6 +32,7 @@ namespace IRCCl.Core
         private static void Client_RawDataReceived(Client client, string rawData)
         {
             Messages.AddSystemMessage(rawData);
+            Messages.UpdateHtml();
         }
 
 

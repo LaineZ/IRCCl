@@ -3,6 +3,8 @@ using HtmlTags;
 using System.IO;
 using TheArtOfDev.HtmlRenderer.Eto;
 using System.Text.RegularExpressions;
+using Eto.Forms;
+
 namespace IRCCl.Core
 {
     public class MessageView
@@ -38,7 +40,7 @@ namespace IRCCl.Core
 
         public void UpdateHtml()
         {
-            MessagesWebView.Text += Html.Last.ToString();
+            Application.Instance.Invoke(() => MessagesWebView.Text = Html.ToString());
         }
 
         public void AddSystemMessage(string message)

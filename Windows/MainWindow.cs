@@ -49,7 +49,6 @@ namespace IRCCl.Windows
 
         private void Timer_Elapsed(object sender, EventArgs e)
         {
-            IRC.Messages.UpdateHtml();
         }
 
         private void ScrollLayout_Scroll(object sender, ScrollEventArgs e)
